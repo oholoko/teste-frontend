@@ -25,7 +25,7 @@ export default {
 
   editUser (userData) {
     const userId = userData.id
-    return getBase().put('users/'+userId,{"data":userData})
+    return getBase().put('users/'+userId,userData)
   },
 
   removeUser (userData) {
@@ -35,6 +35,6 @@ export default {
 
   addUser (userData) {
     const userId = userData.id
-    return getBase().post('users/'+userId,{"data":userData})
+    return getBase().post('users/'+userId,userData)
   },
 }

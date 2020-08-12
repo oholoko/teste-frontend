@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import App from './App.vue'
-import users from '@/handlers/Users'
+import App from '@/App.vue'
+import Users from '@/handlers/Users'
 
 Vue.use(Vuex)
 Vue.config.productionTip = false
-console.log(users)
 
-const app = new Vue({
+new Vue({
+  el: '#app',
+  store: Users,
   render: h => h(App),
 })
-
-app.$mount('#app')
