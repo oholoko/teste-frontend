@@ -14,8 +14,7 @@ const getBase = () => {
 }
 
 export default {
-  getUser (userData) {
-    const userId = userData.id
+  getUser (userId) {
     return getBase().get('users/'+userId)
   },
 
@@ -28,13 +27,11 @@ export default {
     return getBase().put('users/'+userId,userData)
   },
 
-  removeUser (userData) {
-    const userId = userData.id
+  removeUser (userId) {
     return getBase().delete('users/'+userId)
   },
 
   addUser (userData) {
-    const userId = userData.id
-    return getBase().post('users/'+userId,userData)
+    return getBase().post('users/',userData)
   },
 }

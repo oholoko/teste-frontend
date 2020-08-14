@@ -2,32 +2,20 @@
   <div id="Navigation">
     <table>
       <tr>
-        <th v-for="key in fields"
+        <th> User Data </th>
+        <th class='titulo' v-for="key in fields"
           :key="key">
-          {{key}}
-        </th>
-        <th v-for="key in adress"
-          :key="key">
-          {{key}}
-        </th>
-        <th v-for="key in geoLoc"
-          :key="key">
-          {{key}}
+          <button @click="setOrder(key)">
+            {{Capitalize(key)}}
+          </button>
         </th>
       </tr>
       <tr v-for="user in users"
           :key="user.id">
+        <th><router-link :to="'/User/'+user.id">User page</router-link></th>
         <th v-for="key in fields"
             :key="key">
           {{ user[key] }}
-        </th>
-        <th v-for="key in adress"
-            :key="key">
-          {{ user.address[key] }}
-        </th>
-        <th v-for="key in geoLoc"
-            :key="key">
-          {{ user.address.geo[key] }}
         </th>
       </tr>
     </table>
@@ -43,45 +31,62 @@
 <script>
 export default {  
   name: 'Navigation',
+  data () {
+    return {
+      ordenation: 'id'
+    }
+  },
   created() {
     this.$store.dispatch('getUserList'); 
   },
   computed: {
     users() {
-      return this.$store.getters.sort_field('id',this.$store.state.currentPage);
+      return this.$store.getters.sort_field(this.$data.ordenation,this.$store.state.currentPage);
     },    
     pages() {
       return this.$store.getters.pages();
     },
     fields() {
-      return ['id','firstName','lastName','email','phone']
+      return ['id','firstName','lastName']
     },
-    adress() {
-      return ['zipCode','city','streetAddress','country','state']
-    },
-    geoLoc() {
-      return ['latitude','longitude']
-    }
   },
-  methods: {    
+  methods: {
+    setOrder(type){
+      this.$data.ordenation = type
+    },
+    Capitalize(word){
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    },
     setPage(page_num){
       if (page_num % 1 === 0)
-      {
+      { 
         this.$store.dispatch('changePage',page_num)
         return this.$store.getters.pages()
       }
+    },
+    userLink(userId){
+      return '/User/' + userId
     }
   },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+table {
+  border-collapse: collapse;
+  width: 500px;
+}
+table, th, td {
+  border: 1px solid black;
+
+}
+th {
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  font-weight: normal;
+}
+
+th[class=titulo] {
+  text-align: center;
+  font-weight: bold;
 }
 </style>

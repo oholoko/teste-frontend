@@ -52,18 +52,75 @@ export default new Vuex.Store({
           pages = [1]
         }
         return pages
-     }
+      }
+    },
+    userData(state){
+      return () => {
+        return state.currentUser 
+      }
     }
   },
   mutations: {
     setUserList(state, userlist) {
       state.userList = userlist;
     },
+    alterUser(state, values)
+    {
+      const field = values['key']
+      const data = values['value']
+      if (field in ['zipCode','city','streetAddress','country','state'])
+      {
+        state.currentUser.address[field] = data
+      }
+      else {
+        if (field in ['latitude','longitude'])
+        {
+          state.currentUser.address.geo[field] = data
+        }
+        else{
+          state.currentUser[field] = data
+        }
+      }
+    },
+    setUser(state, user) {
+      state.currentUser = user;
+    },
     setPage(state, page) {
       state.currentPage = page;
+    },
+    deleteUser(state){
+      state.currentUser = {}
+      state.getUserList()
     }
   },
   actions: {
+    registerUser(state,user_data)
+    {
+      const fields = ['firstName','lastName','email','phone']
+      const address = ['zipCode','city','streetAddress','country','state']
+      const geo = ['latitude','longitude']
+      let T = {}
+      fields.forEach((value) => {
+        T[value] = user_data[value];
+      })
+      T.address = {}
+      address.forEach((value) => {
+        T.address[value] = user_data[value];
+      })
+      T.address.geo = {}
+      geo.forEach((value) => {
+        T.address.geo[value] = user_data[value];        
+      })
+      return Api.addUser(T)
+      .then(function(response){
+        state.commit('setUser',response.data)
+        return response.data.id;  
+      })
+      .catch(function (error){
+        console.log(error)
+        return 'Falha'
+      })
+    },
     getUserList(state){
       return Api.getUserList()
       .then(function(response){
@@ -73,8 +130,37 @@ export default new Vuex.Store({
         console.log(error)
       })
     },
+    getUser(state,id){
+      return Api.getUser(id)
+      .then(function(response){
+        state.commit('setUser',response.data)
+      })
+      .catch(function (error){
+        console.log(error)
+      })
+    },
     changePage(state,page){
       state.commit('setPage',page)
+    },
+    changeUserData(state,values){
+      state.commit('alterUser',values)
+      return Api.editUser(state.state.currentUser)
+      .then(function(response){
+        state.dispatch('getUser',response.data.id)
+      })
+      .catch(function (error){
+        console.log(error )
+        state.dispatch('getUser',state.currentUser.id)
+      })
+    },
+    deleteUser(state,id){
+      return Api.removeUser(id)
+      .then(function(response){
+        state.commit('deleteUser',response.data)
+      })
+      .catch(function (error){
+        console.log(error)
+      })
     }
   }
 })
